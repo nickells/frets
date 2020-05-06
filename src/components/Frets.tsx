@@ -91,10 +91,10 @@ const String = styled.div`
 `
 
 interface FretboardProps {
-  handleClick?: (fret: number, string: number) => any;
+  onClickFret?: (fret: number, string: number) => any;
 }
 
-export default ({handleClick = () => {}}: FretboardProps) => (
+export default ({onClickFret = () => {}}: FretboardProps) => (
   <FretBoard>
     { 
       frets.map(({fret, string}: Fret) => (
@@ -102,7 +102,7 @@ export default ({handleClick = () => {}}: FretboardProps) => (
           key={`${fret}:${string}`}
           fret={fret}
           string={string}
-          onClick={handleClick(fret, string)}
+          onClick={() => onClickFret(fret, string)}
         >
           { renderInlays(fret, string) }
           <String />
