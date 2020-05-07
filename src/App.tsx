@@ -9,7 +9,6 @@ function getLoopedArrayOfLengthFromIndex<T>(array: Array<T>, length: number, sta
   while (newArray.length < length) {
     newArray.push(shiftedArray[pointer])
     pointer = (pointer + 1) % array.length
-    
   }
   return newArray
 }
