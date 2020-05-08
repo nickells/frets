@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import Frets from './components/Frets';
+import Frets, { FretType } from './components/Frets';
 
 function getLoopedArrayOfLengthFromIndex<T>(array: Array<T>, length: number, start: number): Array<T> {
   const shiftedArray = array.slice(start).concat(array.slice(0, start))
@@ -27,10 +27,26 @@ const handleClick = (fret: number, string: number) => {
   console.log(notes[string - 1][fret])
 }
 
+
+const markers: Array<FretType> = [
+  {
+    fret: 5,
+    string: 6,
+  },
+  {
+    fret: 4,
+    string: 5,
+  },
+  {
+    fret: 4,
+    string: 3,
+  },
+]
+
 function App() {
   return (
     <div className="App">
-      <Frets onClickFret={handleClick}/>
+      <Frets onClickFret={handleClick} markers={markers}/>
     </div>
   );
 }

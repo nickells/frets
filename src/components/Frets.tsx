@@ -1,7 +1,7 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components'
 
-interface FretType {
+export interface FretType {
   string: number,
   fret: number,
 }
@@ -36,27 +36,25 @@ const FretBoard = styled.div`
   grid-template-rows: repeat(6, 1fr);
   width: 100%;
   box-shadow: 0px 00px 40px rgba(0, 0, 0, 0.15);
+  &:hover {
+    cursor: pointer;
+  }
 `
 
 const height: number = 40
 
 const FretMarker = styled.div<FretType>`
   display: inline-block;
-  width: 1px;
   height: ${height}px;
   position: relative;
   width: 100%;
   box-sizing: border-box;
   position: relative;
-  overflow: visible;
   z-index: 1;
-  &:hover {
-    cursor: pointer;
-  }
   border-left: ${({fret}) => {
     if (fret > 1) return '1px solid lightgrey;'
     if (fret === 1) return '4px solid black;'
-    else return ''
+    else return 'none;'
   }}
 `
 
@@ -122,6 +120,7 @@ type FretFunction = (fret: number, string: number) => any
 
 interface FretboardProps {
   onClickFret?: FretEvent;
+  markers: Array<FretType>;
 }
 
 const getFretId = (fret: number, string: number): string => `${fret}:${string}`;
@@ -150,20 +149,21 @@ const Fret = ({fret, string, onClickFret, marked}: FretProps) => {
   )
 }
 
-export default ({onClickFret = () => {}}: FretboardProps) => {
-
+export default ({onClickFret = () => {}, markers = []}: FretboardProps) => {
+  const markerIds = markers.map(({fret, string}) => getFretId(fret, string));
   return (
     <FretBoard>
       { 
-        frets.map(({ fret, string }: FretType): any => (
-          <Fret
-            key={getFretId(fret, string)}
+        frets.map(({ fret, string }: FretType): any => {
+          const id: string = getFretId(fret, string)
+          return <Fret
+            key={id}
             fret={fret}
             string={string}
             onClickFret={onClickFret}
-            marked={(fret === 3 && string === 2)}
+            marked={markerIds.includes(id)}
           />
-        ))
+        })
       }
     </FretBoard>
   )
