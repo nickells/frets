@@ -9,7 +9,7 @@ interface FretType {
 const frets: Array<FretType> = []
 
 for (let string = 1; string < 7; string++) {
-  for (let fret = 1; fret < 23; fret++) {
+  for (let fret = 0; fret < 23; fret++) {
     frets.push({
       string: string,
       fret: fret
@@ -32,7 +32,7 @@ const inlays = new Set([3, 5, 7, 9, 12, 15, 17, 19, 21])
 
 const FretBoard = styled.div`
   display: grid;
-  grid-template-columns: ${columnsString};
+  grid-template-columns: 0.5fr ${columnsString};
   grid-template-rows: repeat(6, 1fr);
   width: 100%;
   box-shadow: 0px 00px 40px rgba(0, 0, 0, 0.15);
@@ -45,7 +45,6 @@ const FretMarker = styled.div<FretType>`
   width: 1px;
   height: ${height}px;
   position: relative;
-  border-left: ${({fret}) => fret > 1 && '1px solid lightgrey'};
   width: 100%;
   box-sizing: border-box;
   position: relative;
@@ -54,6 +53,11 @@ const FretMarker = styled.div<FretType>`
   &:hover {
     cursor: pointer;
   }
+  border-left: ${({fret}) => {
+    if (fret > 1) return '1px solid lightgrey;'
+    if (fret === 1) return '4px solid black;'
+    else return ''
+  }}
 `
 
 const renderInlays = (fret: number, string: number) => {
@@ -80,7 +84,7 @@ const Inlay = styled.div`
   transform: translate(-50%, 50%);
 `
 
-const String = styled.div<{hovered: boolean}>`
+const String = styled.div<{hovered: Boolean}>`
   display: inline-block;
   height: 2px;
   background-color: grey;
@@ -89,10 +93,27 @@ const String = styled.div<{hovered: boolean}>`
   width: calc(100% + 1px);
   left: -1px;
   transform: translateY(-50%);
-  transition: transform 50ms ease-in-out;
+  transition: transform 100ms ease-in-out;
   z-index: 2;
   ${props => props.hovered && `
     transform: translateY(-50%) scaleY(4);
+  `}
+`
+
+const Marker = styled.div<{active: Boolean}>`
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  background-color: black;
+  border-radius: 100%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 200ms ease-in-out;
+  z-index: 2;
+  ${props => props.active && `
+    transform: translate(-50%, -50%) scale(1);
   `}
 `
 
@@ -108,34 +129,28 @@ const getFretId = (fret: number, string: number): string => `${fret}:${string}`;
 interface FretProps {
   fret: number,
   string: number,
-  isHovered: boolean,
-  onHoverFret: FretEvent,
   onClickFret: FretEvent,
+  marked: Boolean,
 }
 
-const Fret = ({fret, string, isHovered, onHoverFret, onClickFret}: FretProps) => {
+const Fret = ({fret, string, onClickFret, marked}: FretProps) => {
+  const [ isHovered, setIsHovered ] = useState<Boolean>(false)
   return (
     <FretMarker 
       fret={fret}
       string={string}
       onClick={() => onClickFret(fret, string)}
-      onMouseOver={() => onHoverFret(fret, string)}
+      onMouseOver={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       { renderInlays(fret, string) }
       <String hovered={isHovered}/>
+      <Marker active={marked} />
     </FretMarker>
   )
 }
 
 export default ({onClickFret = () => {}}: FretboardProps) => {
-  const [{fret : hoveredFret, string: hoveredString}, setHoveredFret] = useState<FretType>({
-    fret: 0,
-    string: 0,
-  })
-
-  const onHoverFret = useCallback((fret: number, string: number): void => {
-    setHoveredFret({fret, string})
-  }, [])
 
   return (
     <FretBoard>
@@ -145,9 +160,8 @@ export default ({onClickFret = () => {}}: FretboardProps) => {
             key={getFretId(fret, string)}
             fret={fret}
             string={string}
-            onHoverFret={onHoverFret}
             onClickFret={onClickFret}
-            isHovered={(hoveredFret === fret) && (hoveredString === string)}
+            marked={(fret === 3 && string === 2)}
           />
         ))
       }
