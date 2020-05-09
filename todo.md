@@ -2,7 +2,6 @@
 • chord builder
 • mini version
 • chord guesser
-• barres
 • X symbols
 • arpeggios
 • teach you what scales are
