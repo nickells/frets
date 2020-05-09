@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components'
+import { getFretId } from '../utils'
 
 export interface FretType {
   string: number,
@@ -8,17 +9,13 @@ export interface FretType {
 
 const frets: Array<FretType> = []
 
-for (let string = 1; string < 7; string++) {
+for (let string = 5; string >= 0; string--) {
   for (let fret = 0; fret < 23; fret++) {
     frets.push({
       string: string,
       fret: fret
     })
   }
-}
-
-type PropType = {
-  danger?: boolean
 }
 
 const columnsString: string = new Array(22)
@@ -50,12 +47,14 @@ const FretMarker = styled.div<FretType>`
   width: 100%;
   box-sizing: border-box;
   position: relative;
-  z-index: 1;
   border-left: ${({fret}) => {
     if (fret > 1) return '1px solid lightgrey;'
     if (fret === 1) return '4px solid black;'
     else return 'none;'
   }}
+  &:hover {
+    background-color: #EEE;
+  }
 `
 
 const renderInlays = (fret: number, string: number) => {
@@ -80,6 +79,7 @@ const Inlay = styled.div`
   left: 50%;
   bottom: 0;
   transform: translate(-50%, 50%);
+  z-index: 2;
 `
 
 const String = styled.div<{hovered: Boolean}>`
@@ -94,11 +94,11 @@ const String = styled.div<{hovered: Boolean}>`
   transition: transform 100ms ease-in-out;
   z-index: 2;
   ${props => props.hovered && `
-    transform: translateY(-50%) scaleY(4);
+    transform: translateY(-50%) scaleY(2);
   `}
 `
 
-const Marker = styled.div<{active: Boolean}>`
+const Marker = styled.div<{active: Boolean, hollow: Boolean}>`
   display: inline-block;
   height: 20px;
   width: 20px;
@@ -113,17 +113,20 @@ const Marker = styled.div<{active: Boolean}>`
   ${props => props.active && `
     transform: translate(-50%, -50%) scale(1);
   `}
+  ${props => props.hollow && `
+    box-sizing: border-box;
+    background-color: white;
+    border: 2px solid black;
+  `}
 `
 
 type FretEvent = (fret: number, string: number) => any
-type FretFunction = (fret: number, string: number) => any
 
 interface FretboardProps {
   onClickFret?: FretEvent;
-  markers: Array<FretType>;
+  markers: Set<String>;
 }
 
-const getFretId = (fret: number, string: number): string => `${fret}:${string}`;
 
 interface FretProps {
   fret: number,
@@ -132,39 +135,43 @@ interface FretProps {
   marked: Boolean,
 }
 
-const Fret = ({fret, string, onClickFret, marked}: FretProps) => {
-  const [ isHovered, setIsHovered ] = useState<Boolean>(false)
-  return (
-    <FretMarker 
-      fret={fret}
-      string={string}
-      onClick={() => onClickFret(fret, string)}
-      onMouseOver={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      { renderInlays(fret, string) }
-      <String hovered={isHovered}/>
-      <Marker active={marked} />
-    </FretMarker>
-  )
+class Fret extends React.Component<FretProps> {
+  shouldComponentUpdate(nextProps: FretProps){
+    if (this.props.marked !== nextProps.marked) return true
+    else return false
+  }
+
+  render(){
+    const {fret, string, onClickFret, marked} = this.props;
+    return (
+      <FretMarker 
+        fret={fret}
+        string={string}
+        onClick={() => onClickFret(fret, string)}
+      >
+        { renderInlays(fret, string) }
+        <String hovered={false}/>
+        <Marker active={marked} hollow={fret===0} />
+      </FretMarker>
+    )
+  }    
 }
 
-export default ({onClickFret = () => {}, markers = []}: FretboardProps) => {
-  const markerIds = markers.map(({fret, string}) => getFretId(fret, string));
+export default ({onClickFret = () => {}, markers = new Set()}: FretboardProps) => {
   return (
-    <FretBoard>
-      { 
-        frets.map(({ fret, string }: FretType): any => {
-          const id: string = getFretId(fret, string)
-          return <Fret
-            key={id}
-            fret={fret}
-            string={string}
-            onClickFret={onClickFret}
-            marked={markerIds.includes(id)}
-          />
-        })
-      }
-    </FretBoard>
+      <FretBoard>
+        { 
+          frets.map(({ fret, string }: FretType): any => {
+            const id: string = getFretId({fret, string})
+            return <Fret
+              key={id}
+              fret={fret}
+              string={string}
+              onClickFret={onClickFret}
+              marked={markers.has(id)}
+            />
+          })
+        }
+      </FretBoard>
   )
 }
