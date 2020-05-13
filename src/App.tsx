@@ -8,10 +8,11 @@ function App() {
   return (
     <div className="App">
       {(() => {
-        switch (window.location.pathname) {
-          case '/notes':
+        const pathParts = window.location.pathname.split('/').filter(item => item !== '')
+        switch (pathParts[pathParts.length - 1]) {
+          case 'notes':
             return <NoteTraining />
-          case '/scales':
+          case 'scales':
           default:
             return <Scales />
         }
