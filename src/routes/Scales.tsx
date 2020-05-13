@@ -27,7 +27,7 @@ const Scales = () => {
   const [ root, setRoot ] = useState(note.E)
   
 
-  const scaleMarker = new Set(findNotesOnFretboard(createScale(root, scale), clickedFret))
+  const scaleMarker: Set<String> = new Set(findNotesOnFretboard(createScale(root, scale), clickedFret))
   
   return (
     <>

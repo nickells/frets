@@ -40,7 +40,7 @@ const FretBoard = styled.div`
 
 const height: number = 40
 
-const FretMarker = styled.div<FretType>`
+const FretSpace = styled.div<{fret: number, string: number, disabled: boolean}>`
   display: inline-block;
   height: ${height}px;
   position: relative;
@@ -52,6 +52,9 @@ const FretMarker = styled.div<FretType>`
     if (fret === 1) return '4px solid black;'
     else return 'none;'
   }}
+  ${props => props.disabled && `
+    background-color: #DDD;
+  `}
   &:hover {
     background-color: #EEE;
   }
@@ -125,6 +128,7 @@ type FretEvent = (fret: number, string: number) => any
 interface FretboardProps {
   onClickFret?: FretEvent;
   markers: Set<String>;
+  activeRange?: Array<number>;
 }
 
 
@@ -133,31 +137,34 @@ interface FretProps {
   string: number,
   onClickFret: FretEvent,
   marked: Boolean,
+  disabled: boolean,
 }
 
 class Fret extends React.Component<FretProps> {
   shouldComponentUpdate(nextProps: FretProps){
     if (this.props.marked !== nextProps.marked) return true
+    if (this.props.disabled !== nextProps.disabled) return true
     else return false
   }
 
   render(){
-    const {fret, string, onClickFret, marked} = this.props;
+    const {fret, string, onClickFret, marked, disabled } = this.props;
     return (
-      <FretMarker 
+      <FretSpace 
         fret={fret}
         string={string}
         onClick={() => onClickFret(fret, string)}
+        disabled={disabled}
       >
         { renderInlays(fret, string) }
         <String hovered={false}/>
         <Marker active={marked} hollow={fret===0} />
-      </FretMarker>
+      </FretSpace>
     )
   }    
 }
 
-export default ({onClickFret = () => {}, markers = new Set()}: FretboardProps) => {
+export default ({onClickFret = () => {}, markers = new Set(), activeRange = [0, 22]}: FretboardProps) => {
   return (
       <FretBoard>
         { 
@@ -169,6 +176,7 @@ export default ({onClickFret = () => {}, markers = new Set()}: FretboardProps) =
               string={string}
               onClickFret={onClickFret}
               marked={markers.has(id)}
+              disabled={fret >= activeRange[1] || fret < activeRange[0]}
             />
           })
         }

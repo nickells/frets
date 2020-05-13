@@ -76,10 +76,12 @@ export const findNotesOnFretboard = (notes: Array<note>, startPosition?: FretTyp
 
 
 export const getFretId = (fret: FretType): string => `${fret.fret}:${fret.string}`;
-export const getFretFromId = (id: string) => {
+export const getFretFromId = (id: string): FretType => {
   const [fret, string] = id.split(':')
   return {
-    fret,
-    string
+    fret: Number(fret),
+    string: Number(string)
   }
 }
+
+export const getNoteFromFret = (fret: FretType): note => guitarNotes[fret.string][fret.fret]

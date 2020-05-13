@@ -14,6 +14,11 @@ export default styled.button<{selected: Boolean}>`
   min-width: 3em;
   &:hover{
     cursor: pointer;
+    transform: scale(1.1);
+  }
+  &:active {
+    transform: scale(0.9);
+    box-shadow: none;
   }
   transition: all 200ms ease-in-out;
   ${(props) => props.selected && `
