@@ -164,7 +164,7 @@ class Fret extends React.Component<FretProps> {
   }    
 }
 
-export default ({onClickFret = () => {}, markers = new Set(), activeRange = [0, 22]}: FretboardProps) => {
+export default ({onClickFret = () => {}, markers = new Set(), activeRange = [0, 23]}: FretboardProps) => {
   return (
       <FretBoard>
         { 

@@ -5,10 +5,10 @@ import ShadowButton from '../components/ShadowButton';
 import { note, noteNames } from '../constants';
 import { createFretStrings, getFretId, getNoteFromFret, getFretFromId } from '../utils';
 import styled from 'styled-components'
-
+import InfoText from '../components/InfoText';
 
 const Controls = styled.div`
-  margin-bottom: 50px;
+  margin: 50px 0px;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -61,6 +61,7 @@ const NoteTraining = () => {
 
   return (
     <>
+      <InfoText>Guess the note marked by the dot. Click on the fretboard to change the available range.</InfoText>
       <Controls>
         <div>
           { noteNames.map(name => (
