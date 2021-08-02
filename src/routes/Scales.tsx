@@ -19,17 +19,21 @@ const Controls = styled.div`
 
 const Scales = () => {
 
-  const [ clickedFret, setClickedFret ] = useState<FretType>({fret: 0, string: 0});
-  const onClickFret = (fret: number, string: number) => {
-    setClickedFret({fret, string})
-    setRoot(guitarNotes[string][fret])
-  }
-
+  const [ startFret, setStartFret ] = useState<FretType>({fret: 0, string: 0});
   const [ scale, setScale ] = useState(0)
   const [ root, setRoot ] = useState(note.E)
   
+  const onClickFret = (fret: number, string: number) => {
+    setStartFret({fret, string})
+    setRoot(guitarNotes[string][fret])
+  }
 
-  const scaleMarker: Set<String> = new Set(findNotesOnFretboard(createScale(root, scale), clickedFret))
+  const onClickNoteName = (name: note) => {
+    setStartFret({fret: guitarNotes[0].indexOf(name), string: 0})
+    setRoot(name);
+  }
+
+  const scaleMarker: Set<String> = new Set(findNotesOnFretboard(createScale(root, scale), startFret))
   
   return (
     <>
@@ -39,7 +43,7 @@ const Scales = () => {
           { noteNames.map(name => (
             <ShadowButton
               selected={root === name}
-              onClick={() => setRoot(name)}
+              onClick={() => onClickNoteName(name)}
             >{name}</ShadowButton>
           ))}
         </div>

@@ -27,7 +27,7 @@ const NavButton = styled.button<{active: Boolean}>`
 `
 
 function App() {
-  const [view, setView] = useState<views>(views.notes)
+  const [view, setView] = useState<views>(views.scales)
 
   return (
     <>

@@ -15,12 +15,14 @@ export function getLoopedArrayOfLengthFromIndex<T>(array: Array<T>, length: numb
 export const createFretStrings = (): Array<Array<note>> => {
   const stringCreator = (start: number) => getLoopedArrayOfLengthFromIndex(noteNames, 22, start)
   const strings = [note['E'],note['A'],note['D'],note['G'],note['B'],note['E']].map(note => stringCreator(noteNames.indexOf(note)))
+  console.log(strings)
   return strings
 }
 
 export const createNoteSetFromIntervalsAtRoot = (intervals: Array<number>, root: note): Array<note> => {
   const chromaticLength = intervals.reduce((sum, current) => sum + current, 0 )
   const chromatic = getLoopedArrayOfLengthFromIndex(noteNames, chromaticLength, noteNames.indexOf(root))
+  console.log({chromatic})
   const output: Array<note> = []
   
   let pointer = 0
@@ -28,7 +30,8 @@ export const createNoteSetFromIntervalsAtRoot = (intervals: Array<number>, root:
     output.push(chromatic[pointer])
     pointer = intervals[i] + pointer
   }
-  output.push(chromatic[0]) // append the last octave
+  // output.push(chromatic[0]) // append the last octave
+  console.log({output})
   return output
 }
 
@@ -40,6 +43,7 @@ export const createScale = (root: note, mode: number, octaves = 2): Array<note> 
 export const guitarNotes = createFretStrings()
 
 export const findNotesOnFretboard = (notes: Array<note>, startPosition?: FretType): Array<string> => {
+  console.log({notes, startPosition})
   const frets: Array<FretType> = []
   const startFret = startPosition ? startPosition.fret : guitarNotes[0].indexOf(notes[0])
   const startString = startPosition ? startPosition.string : 0
